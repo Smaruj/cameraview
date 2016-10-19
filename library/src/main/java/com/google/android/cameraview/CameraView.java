@@ -260,6 +260,24 @@ public class CameraView extends FrameLayout {
     }
 
     /**
+     * Add a new preview callback
+     *
+     * @param callback The {@link PreviewCallback} to add.
+     */
+    public void addPreviewCallback (@NonNull PreviewCallback callback) {
+        // TODO Implement
+    }
+
+    /**
+     * Remove a preview callback.
+     *
+     * @param callback The {@link PreviewCallback} to remove.
+     */
+    public void removePreviewCallback(@NonNull PreviewCallback callback) {
+        // TODO Implement
+    }
+
+    /**
      * @param adjustViewBounds {@code true} if you want the CameraView to adjust its bounds to
      *                         preserve the aspect ratio of camera.
      * @see #getAdjustViewBounds()
@@ -504,6 +522,20 @@ public class CameraView extends FrameLayout {
          */
         public void onPictureTaken(CameraView cameraView, byte[] data) {
         }
+    }
+
+    /**
+     * Callback for intercepting frames that {@link CameraView} sends to its preview.
+     */
+    interface PreviewCallback {
+
+        /**
+         * Called whenever a new frame for preview is ready
+         *
+         * @param cameraView The associated {@link CameraView}.
+         * @param data       JPEG data.
+         */
+        void onPreviewFrameReady(CameraView cameraView, byte[] data);
     }
 
 }
