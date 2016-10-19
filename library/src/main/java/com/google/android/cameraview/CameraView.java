@@ -73,6 +73,8 @@ public class CameraView extends FrameLayout {
 
     private final CallbackBridge mCallbacks;
 
+    private final PreviewCallbackBridge mPreviewCallbacks;
+
     private boolean mAdjustViewBounds;
 
     private final DisplayOrientationDetector mDisplayOrientationDetector;
@@ -96,10 +98,11 @@ public class CameraView extends FrameLayout {
             preview = new TextureViewPreview(context, this);
         }
         mCallbacks = new CallbackBridge();
+        mPreviewCallbacks = new PreviewCallbackBridge();
         if (Build.VERSION.SDK_INT < 21) {
-            mImpl = new Camera1(mCallbacks, preview);
+            mImpl = new Camera1(mCallbacks, mPreviewCallbacks, preview);
         } else {
-            mImpl = new Camera2(mCallbacks, preview, context);
+            mImpl = new Camera2(mCallbacks, mPreviewCallbacks, preview, context);
         }
         // Attributes
         TypedArray a = context.obtainStyledAttributes(attrs, R.styleable.CameraView, defStyleAttr,
@@ -265,7 +268,7 @@ public class CameraView extends FrameLayout {
      * @param callback The {@link PreviewCallback} to add.
      */
     public void addPreviewCallback (@NonNull PreviewCallback callback) {
-        // TODO Implement
+        mPreviewCallbacks.add(callback);
     }
 
     /**
@@ -274,7 +277,7 @@ public class CameraView extends FrameLayout {
      * @param callback The {@link PreviewCallback} to remove.
      */
     public void removePreviewCallback(@NonNull PreviewCallback callback) {
-        // TODO Implement
+        mPreviewCallbacks.remove(callback);
     }
 
     /**
@@ -441,6 +444,29 @@ public class CameraView extends FrameLayout {
         }
     }
 
+    private class PreviewCallbackBridge implements CameraViewImpl.PreviewCallback {
+
+        private ArrayList<PreviewCallback> mCallbacks = new ArrayList<>();
+
+        PreviewCallbackBridge() {
+        }
+
+        void add(PreviewCallback callback) {
+            mCallbacks.add(callback);
+        }
+
+        void remove(PreviewCallback callback) {
+            mCallbacks.remove(callback);
+        }
+
+        @Override
+        public void onPreviewFrameReady(byte[] data) {
+            for(PreviewCallback callback : mCallbacks) {
+                callback.onPreviewFrameReady(CameraView.this, data);
+            }
+        }
+    }
+
     protected static class SavedState extends BaseSavedState {
 
         @Facing
@@ -527,7 +553,8 @@ public class CameraView extends FrameLayout {
     /**
      * Callback for intercepting frames that {@link CameraView} sends to its preview.
      */
-    interface PreviewCallback {
+    @SuppressWarnings("UnusedParameters")
+    public static abstract class PreviewCallback {
 
         /**
          * Called whenever a new frame for preview is ready
@@ -535,7 +562,8 @@ public class CameraView extends FrameLayout {
          * @param cameraView The associated {@link CameraView}.
          * @param data       JPEG data.
          */
-        void onPreviewFrameReady(CameraView cameraView, byte[] data);
+        void onPreviewFrameReady(CameraView cameraView, byte[] data){
+        }
     }
 
 }

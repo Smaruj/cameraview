@@ -24,10 +24,13 @@ abstract class CameraViewImpl {
 
     protected final Callback mCallback;
 
+    protected final PreviewCallback mPreviewCallback;
+
     protected final PreviewImpl mPreview;
 
-    CameraViewImpl(Callback callback, PreviewImpl preview) {
+    CameraViewImpl(Callback callback, PreviewCallback previewCallback, PreviewImpl preview) {
         mCallback = callback;
+        mPreviewCallback = previewCallback;
         mPreview = preview;
     }
 
@@ -71,6 +74,11 @@ abstract class CameraViewImpl {
 
         void onPictureTaken(byte[] data);
 
+    }
+
+    interface PreviewCallback {
+
+        void onPreviewFrameReady(byte[] data);
     }
 
 }

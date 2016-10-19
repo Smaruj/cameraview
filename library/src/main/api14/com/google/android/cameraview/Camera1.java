@@ -67,8 +67,8 @@ class Camera1 extends CameraViewImpl {
 
     private int mDisplayOrientation;
 
-    Camera1(Callback callback, PreviewImpl preview) {
-        super(callback, preview);
+    Camera1(Callback callback, PreviewCallback previewCallback, PreviewImpl preview) {
+        super(callback, previewCallback, preview);
         preview.setCallback(new PreviewImpl.Callback() {
                 @Override
                 public void onSurfaceChanged() {
